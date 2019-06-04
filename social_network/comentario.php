@@ -8,11 +8,13 @@ session_start();
     header("Location: login.php");
   }
 
+ $id_post = $_GET["id_post"];
+
  ?>
 
 <html>
 
-<title> Meu Perfil | Soccer Field</title>
+<title> Comentário | Soccer Field</title>
 <meta charset="UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -53,63 +55,97 @@ html, body, h1, h2, h3, h4, h5 {font-family: "Open Sans", sans-serif}
 <!-- Page Container -->
 <div class="w3-container w3-content" style="max-width:1400px;margin-top:80px">
   <!-- The Grid -->
-  <div class="w3-row">
-    <!-- Left Column -->
-    <div class="w3-card w3-round w3-white">
-        <div class="w3-container">
-          <!-- Colocar o nome do usuario da sessão-->
-         <h4 class="w3-center"> <?php echo $_SESSION["nome_user"]." ".$_SESSION["sobrenome_user"];?> </h4>
-         <!-- Pegar a imagem do banco e colocar no src-->
-         <h4 class="w3-center"><img width="150px" src='<?php echo $_SESSION["foto_user"];?>'></h4>
-         <hr>
-
-         <!-- Pegar do Banco de Dados-->
-         <p><i class="fa fa-heartbeat fa-fw w3-margin-right w3-text-theme"></i><?php echo $_SESSION["time_user"];?></p>
-         <p><i class="fa fa-home fa-fw w3-margin-right w3-text-theme"></i> <?php echo $_SESSION["cidade_user"].", ".$_SESSION["estado_user"];?></p>
-         <p><i class="fa fa-birthday-cake fa-fw w3-margin-right w3-text-theme"></i> <?php echo $_SESSION["aniversario_user"]; ?></p>
-         <p><i class="fas fa-running fa-fw w3-margin-right w3-text-theme"></i> <?php echo $_SESSION["jogador"]; ?></p>
-         <p><i class="fas fa-venus-mars fa-fw w3-margin-right w3-text-theme"></i> <?php echo $_SESSION["sexo"]; ?></p>
-        </div>
-      </div>
-      <br>
 
       <?php
-
       error_reporting(1);
-       include_once "conecta_bd.php";
-       $id_user= $_SESSION["id_user"];
-         $sql = "SELECT postagem.id_post, postagem.post, postagem.img, postagem.data_post, postagem.id_user, usuario.id_user, usuario.nome,usuario.sobrenome,usuario.foto
-         FROM postagem
-         INNER JOIN usuario
-         ON usuario.id_user = postagem.id_user
-         WHERE postagem.id_user = $id_user
-         ORDER BY .postagem.data_post desc";
-         $retorno = $con->query( $sql );
-         while ($registro = $retorno->fetch_array()){
-           $id_post = $registro["id_post"];
-           $post = $registro["post"];
-           $img = $registro["img"];
-           $data_post = $registro["data_post"];
-           $id = $registro['id_user'];
-           $nome = $registro['nome'];
-           $sobrenome = $registro['sobrenome'];
-           $foto = $registro['foto'];
-   echo
-     "<div class='w3-container w3-card w3-white w3-round w3-margin'><br>
-       <img src=$foto class='w3-left w3-margin-right' style='width:60px'>
-       <span class='w3-right w3-opacity'>$data_post</span><br>
-       <span class='w3-right w3-opacity'><a href='apagar.php?id_post=$id_post'<button type='submit' action='apagar.php' class='w3-button'>Apagar</button></a></span>
-       <h4>$nome $sobrenome</h4>
-       <br>
-       <hr class='w3-clear'>
-       <p>$post</p>
-       <img src='$img' style='width:30%' class='w3-margin-bottom'>
-       <br>
-       <button type='button' class='w3-button w3-theme-d1 w3-margin-bottom'><i class='fa fa-thumbs-up'></i>  Like</button>
- <a href='comentario.php?id_post=$id_post'><button type='button' class='w3-button w3-theme-d2 w3-margin-bottom'><i class='fa fa-comment'></i>  Comentario</button></a>
-   </div>";
-     }
+      include_once "conecta_bd.php";
 
+      $id_post = $_GET["id_post"];
+
+        $sql = "SELECT *
+        FROM postagem
+        INNER JOIN usuario
+        ON usuario.id_user = postagem.id_user
+        WHERE postagem.id_post = $id_post
+        ORDER BY .postagem.data_post desc";
+
+        $retorno = $con->query( $sql );
+
+        while ($registro = $retorno->fetch_assoc()){
+
+          $id_post = $registro["id_post"];
+          $post = $registro["post"];
+          $img = $registro["img"];
+          $data_post = $registro["data_post"];
+
+          $id = $registro['id_user'];
+          $nome = $registro['nome'];
+          $sobrenome = $registro['sobrenome'];
+          $foto = $registro['foto'];
+
+
+      echo
+      "<div class='w3-container w3-card w3-white w3-round w3-margin'><br>
+      <img src=$foto class='w3-left w3-margin-right' style='width:60px'>
+      <span class='w3-right w3-opacity'>$data_post</span><br>
+      <h4>$nome $sobrenome</h4>
+      <br>
+      <hr class='w3-clear'>
+      <p>$post</p>
+      <img src='$img' style='width:30%' class='w3-margin-bottom'>
+      <br>";
+      }
+?>
+
+    <hr class='w3-clear'>
+      <?php echo"<form action='coment.php?id_post=$id_post' method='post'>";?>
+      <input type="text" class="w3-border w3-padding" style="width:50%;" name="comentario">
+      <button type="submit" class=" w3-theme-d2 w3-border w3-padding"><i class="fa fa-comment"></i> Comentario</button>
+      <button type='button' class='w3-theme-d1 w3-border w3-padding'><i class='fa fa-thumbs-up'></i>  Like</button>
+    </form>
+
+
+  </div>
+  <?php
+  error_reporting(1);
+  include_once "conecta_bd.php";
+
+  $id_post = $_GET["id_post"];
+
+    $sql = "SELECT comentario.*,postagem.id_post, usuario.id_user, usuario.nome,usuario.sobrenome,usuario.foto
+    FROM comentario
+    INNER JOIN usuario ON usuario.id_user = comentario.id_user
+    INNER JOIN postagem ON postagem.id_post = comentario.id_post
+    WHERE postagem.id_post = $id_post
+    ORDER BY comentario.data_comentario desc";
+
+    $retorno = $con->query( $sql );
+
+    while ($registro = $retorno->fetch_array()){
+
+      $id_post = $registro["id_post"];
+      $id_comentario = $registro["id_comentario"];
+      $comentario = $registro["comentario"];
+      $data_comentario = $registro["data_comentario"];
+
+      $id = $registro['id_user'];
+      $nome = $registro['nome'];
+      $sobrenome = $registro['sobrenome'];
+      $foto = $registro['foto'];
+
+
+  echo
+  "<div class='w3-container w3-card w3-white w3-round w3-margin'><br>
+  <img src=$foto class='w3-left w3-margin-right' style='width:60px'>
+  <span class='w3-right w3-opacity'>$data_comentario</span><br>
+  <h4>$nome $sobrenome</h4>
+  <br>
+  <hr class='w3-clear'>
+  <p>$comentario</p>
+  <br>
+  </div>";
+
+  }
 ?>
     <!-- End Middle Column -->
     </div>
@@ -124,14 +160,9 @@ html, body, h1, h2, h3, h4, h5 {font-family: "Open Sans", sans-serif}
 </div>
 <br>
 
-<!-- Footer -->
-<footer class="w3-container w3-theme-d3 w3-padding-16">
-  <h5>Footer</h5>
-</footer>
 
-<footer class="w3-container w3-theme-d5">
-  <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
-</footer>
+
+
 
 <script>
 // Accordion

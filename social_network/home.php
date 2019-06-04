@@ -1,4 +1,4 @@
-<?php
+b<?php
 include_once "conecta_bd.php";
 session_start();
 
@@ -32,10 +32,9 @@ html, body, h1, h2, h3, h4, h5 {font-family: "Open Sans", sans-serif}
 <div class="w3-top">
  <div class="w3-bar w3-theme-d2 w3-left-align w3-large" style="vertical-align: middle;">
   <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-white w3-large w3-theme-d2" href="javascript:void(0);" onclick="openNav()"><i class="fa fa-bars"></i></a>
-  <a href="#" class="w3-bar-item w3-button w3-padding-large w3-theme-d2"><i class="far fa-futbol"></i> Soccer Field</a>
-  <a href="perfil.php" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white" title="Account Settings"><i style="padding-top:9px;" class="fa fa-user"></i></a>
-  <a href="#" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white" title="Messages"><i style="margin-top:9px;" class="fa fa-envelope"></i></a>
- <!--Logoff ta aqui-->
+  <a href="home.php" class="w3-bar-item w3-button w3-padding-large w3-theme-d2"><i class="far fa-futbol"></i> Soccer Field</a>
+  <a href="perfil.php" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white" title="Meu Perfil"><i style="padding-top:9px;" class="fa fa-user"></i></a>
+   <!--Logoff ta aqui-->
   <a href="logout.php" class="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white" title="Sair"><i style="padding-top:9px;" class="fa fa-power-off"></i></a>
   <a href="pesquisar_amigos.php" class="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white" title="Pesquisar Amigos"><i style="padding-top:9px;" class="fa fa-search"></i></a>
  </div>
@@ -43,7 +42,7 @@ html, body, h1, h2, h3, h4, h5 {font-family: "Open Sans", sans-serif}
 
 <!-- Navbar responsiva -->
 <div id="navDemo" class="w3-bar-block w3-theme-d2 w3-hide w3-hide-large w3-hide-medium w3-large">
- 
+
   <a href="pesquisar.php" class="w3-bar-item w3-button w3-padding-large">Pesquisar Pessoas</a>
   <a href="perfil.php" class="w3-bar-item w3-button w3-padding-large">Meu Perfil</a>
   <a href="logout.php" class="w3-bar-item w3-button w3-padding-large">Logout</a>
@@ -61,7 +60,7 @@ html, body, h1, h2, h3, h4, h5 {font-family: "Open Sans", sans-serif}
         <div class="w3-container">
           <!-- Colocar o nome do usuario da sessão-->
          <h4 class="w3-center"> <?php echo $_SESSION["nome_user"]." ".$_SESSION["sobrenome_user"];?> </h4>
-         <h4 class="w3-center"><?php echo '<img src="' . $_SESSION["foto_user"]. '"  height="200" width="150">';?> </h4>
+         <h4 class="w3-center"><?php echo '<img src="' . $_SESSION["foto_user"]. '"  width="120px">';?> </h4>
 
          <hr>
          <!-- Pegar do Banco de Dados-->
@@ -95,9 +94,9 @@ html, body, h1, h2, h3, h4, h5 {font-family: "Open Sans", sans-serif}
             <form action="post.php" method="post">
               <div class="w3-container w3-padding" align="center">
                 <h6 class="w3-opacity">Crie sua Publicação</h6>
-                <input type="text" name="img" class="w3-border w3-padding" style="width:50%;" placeholder="Informe o link da sua imagem">
+                <input type="text" name="img" class="w3-border w3-padding" autocomplete="off" style="width:50%;" placeholder="Informe o link da sua imagem">
                 <span class="w3-border w3-padding"><i class="fa fa-image"></i></span> <br><br>
-                <input type="text" name="post" class="w3-border w3-padding" style="width:50%;" placeholder="Digite seu post">
+                <input type="text" name="post" class="w3-border w3-padding" autocomplete="off" style="width:50%;" placeholder="Digite seu post">
                 <br><br><button type="submit" value="Enviar" class="w3-button w3-theme"><i class="fa fa-pencil"></i>  Post</button>
               </div>
             </form>
@@ -107,52 +106,48 @@ html, body, h1, h2, h3, h4, h5 {font-family: "Open Sans", sans-serif}
       </div>
 
 
+      <?php
+        error_reporting(1);
+        include_once "conecta_bd.php";
+
+        $id_teste = $_SESSION["id_user"];
+
+            $sql = "SELECT a.id_post, a.post, a.img, a.data_post, a.id_user, b.id_user, b.nome,b.sobrenome,b.foto
+            FROM postagem as a
+            INNER JOIN usuario as b
+            ON a.id_user = b.id_user";
+
+            $retorno = $con->query( $sql );
+
+            while ($registro = $retorno->fetch_array()){
+
+              $id_post = $registro["id_post"];
+              $post = $registro["post"];
+              $img = $registro["img"];
+              $data_post = $registro["data_post"];
+
+              $id = $registro['id_user'];
+              $nome = $registro['nome'];
+              $sobrenome = $registro['sobrenome'];
+              $foto = $registro['foto'];
 
 
 
-
-
-
-
-      <div class="w3-container w3-card w3-white w3-round w3-margin"><br>
-        <img src="/w3images/avatar2.png" alt="Avatar" class="w3-left w3-circle w3-margin-right" style="width:60px">
-        <span class="w3-right w3-opacity">1 min</span>
-        <h4>John Doe</h4><br>
-        <hr class="w3-clear">
-        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-          <div class="w3-row-padding" style="margin:0 -16px">
-            <div class="w3-half">
-              <img src="/w3images/lights.jpg" style="width:100%" alt="Northern Lights" class="w3-margin-bottom">
-            </div>
-            <div class="w3-half">
-              <img src="/w3images/nature.jpg" style="width:100%" alt="Nature" class="w3-margin-bottom">
-          </div>
-        </div>
-        <button type="button" class="w3-button w3-theme-d1 w3-margin-bottom"><i class="fa fa-thumbs-up"></i>  Like</button>
-        <button type="button" class="w3-button w3-theme-d2 w3-margin-bottom"><i class="fa fa-comment"></i>  Comment</button>
-      </div>
-
-      <div class="w3-container w3-card w3-white w3-round w3-margin"><br>
-        <img src="/w3images/avatar5.png" alt="Avatar" class="w3-left w3-circle w3-margin-right" style="width:60px">
-        <span class="w3-right w3-opacity">16 min</span>
-        <h4>Jane Doe</h4><br>
-        <hr class="w3-clear">
-        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-        <button type="button" class="w3-button w3-theme-d1 w3-margin-bottom"><i class="fa fa-thumbs-up"></i>  Like</button>
-        <button type="button" class="w3-button w3-theme-d2 w3-margin-bottom"><i class="fa fa-comment"></i>  Comment</button>
-      </div>
-
-      <div class="w3-container w3-card w3-white w3-round w3-margin"><br>
-        <img src="/w3images/avatar6.png" alt="Avatar" class="w3-left w3-circle w3-margin-right" style="width:60px">
-        <span class="w3-right w3-opacity">32 min</span>
-        <h4>Angie Jane</h4><br>
-        <hr class="w3-clear">
-        <p>Have you seen this?</p>
-        <img src="/w3images/nature.jpg" style="width:100%" class="w3-margin-bottom">
-        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-        <button type="button" class="w3-button w3-theme-d1 w3-margin-bottom"><i class="fa fa-thumbs-up"></i>  Like</button>
-        <button type="button" class="w3-button w3-theme-d2 w3-margin-bottom"><i class="fa fa-comment"></i>  Comment</button>
-      </div>
+      echo
+        "<div class='w3-container w3-card w3-white w3-round w3-margin'><br>
+          <img src=$foto class='w3-left w3-margin-right' style='width:60px'>
+          <span class='w3-right w3-opacity'>$data_post </span><br>
+          <h4>$nome $sobrenome</h4>
+          <br>
+          <hr class='w3-clear'>
+          <p>$post</p>
+          <img src='$img' style='width:30%' class='w3-margin-bottom'>
+          <br>
+          <button type='button' class='w3-button w3-theme-d1 w3-margin-bottom'><i class='fa fa-thumbs-up'></i>  Like</button>
+          <a href='comentario.php?id_post=$id_post'><button type='button' class='w3-button w3-theme-d2 w3-margin-bottom'><i class='fa fa-comment'></i>  Comentario</button></a>
+      </div>";
+        }
+        ?>
 
     <!-- End Middle Column -->
     </div>
@@ -191,12 +186,9 @@ html, body, h1, h2, h3, h4, h5 {font-family: "Open Sans", sans-serif}
 <br>
 
 <!-- Footer -->
-<footer class="w3-container w3-theme-d3 w3-padding-16">
-  <h5>Footer</h5>
-</footer>
 
-<footer class="w3-container w3-theme-d5">
-  <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
+<footer class="w3-container w3-theme-d2">
+  <p align="center">Criado por Ariel Nogueira e Marcelo da Hora</p>
 </footer>
 
 <script>

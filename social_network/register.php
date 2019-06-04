@@ -19,8 +19,7 @@ if ($_POST != null) {
   $jogador = addslashes( $_POST["jogador"]);
 
   $sql = "INSERT INTO usuario(email,senha,foto,nome,sobrenome,aniversario,sexo,estado,cidade,time,jogador)
-          VALUES ('$email',md5('$senha'),'$foto','$nome','$sobrenome','$aniversario','$sexo','$estado','$cidade','$time','$jogador')
-          WHERE Orderdate='11-11-2019'";
+          VALUES ('$email',md5('$senha'),'$foto','$nome','$sobrenome','$aniversario','$sexo','$estado','$cidade','$time','$jogador')";
 
 
           $retorno = $con->query( $sql );

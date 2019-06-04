@@ -1,9 +1,20 @@
 <?php
+include_once "conecta_bd.php";
 session_start();
 
   if ($_SESSION["logado"] != "ok") {
     header("Location: login.php");
   }
+
+  $filtro_sql = "";
+
+  if ($_POST != NULL){
+    $filtro = $_POST["filtro"];
+
+    $filtro_sql = "WHERE nome LIKE '%$filtro%'
+                   OR sobrenome LIKE '%$filtro%'";
+  }
+
 
  ?>
 
@@ -31,11 +42,9 @@ html, body, h1, h2, h3, h4, h5 {font-family: "Open Sans", sans-serif}
 <div class="w3-top">
  <div class="w3-bar w3-theme-d2 w3-left-align w3-large" style="vertical-align: middle;">
   <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-white w3-large w3-theme-d2" href="javascript:void(0);" onclick="openNav()"><i class="fa fa-bars"></i></a>
-  <a href="#" class="w3-bar-item w3-button w3-padding-large w3-theme-d2"><i class="far fa-futbol"></i> Soccer Field</a>
-  <a href="#" class="w3-bar-item w3-button w3-padding-large w3-hover-white" title=""><i style="padding-top:9px;" class="fa fa-globe"></i></a>
+  <a href="home.php" class="w3-bar-item w3-button w3-padding-large w3-theme-d2"><i class="far fa-futbol"></i> Soccer Field</a>
   <a href="perfil.php" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white" title="Account Settings"><i style="padding-top:9px;" class="fa fa-user"></i></a>
-  <a href="#" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white" title="Messages"><i style="margin-top:9px;" class="fa fa-envelope"></i></a>
- <!--Logoff ta aqui-->
+   <!--Logoff ta aqui-->
   <a href="logout.php" class="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white" title="Sair"><i style="padding-top:9px;" class="fa fa-power-off"></i></a>
   <a href="pesquisar_amigos.php" class="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white" title="Pesquisar Amigos"><i style="padding-top:9px;" class="fa fa-search"></i></a>
  </div>
@@ -43,9 +52,9 @@ html, body, h1, h2, h3, h4, h5 {font-family: "Open Sans", sans-serif}
 
 <!-- Navbar responsiva -->
 <div id="navDemo" class="w3-bar-block w3-theme-d2 w3-hide w3-hide-large w3-hide-medium w3-large">
-  <a href="#" class="w3-bar-item w3-button w3-padding-large">Home</a>
-  <a href="#" class="w3-bar-item w3-button w3-padding-large">Amigos</a>
-  <a href="#" class="w3-bar-item w3-button w3-padding-large">Meu Perfil</a>
+
+  <a href="pesquisar.php" class="w3-bar-item w3-button w3-padding-large">Pesquisar Pessoas</a>
+  <a href="perfil.php" class="w3-bar-item w3-button w3-padding-large">Meu Perfil</a>
   <a href="logout.php" class="w3-bar-item w3-button w3-padding-large">Logout</a>
 </div>
 
@@ -60,7 +69,7 @@ html, body, h1, h2, h3, h4, h5 {font-family: "Open Sans", sans-serif}
         <div class="w3-container">
           <!-- Colocar o nome do usuario da sessão-->
          <h4 class="w3-center"> <?php echo $_SESSION["nome_user"]." ".$_SESSION["sobrenome_user"];?> </h4>
-         <h4 class="w3-center"><?php echo '<img src="' . $_SESSION["foto_user"]. '"  height="200" width="150">';?> </h4>
+         <h4 class="w3-center"><?php echo '<img src="' . $_SESSION["foto_user"]. '" width="150px">';?> </h4>
 
          <hr>
          <!-- Pegar do Banco de Dados-->
@@ -74,25 +83,148 @@ html, body, h1, h2, h3, h4, h5 {font-family: "Open Sans", sans-serif}
     <!-- End Left Column -->
     </div>
 
-    <!-- Posts -->
+    <!-- pesquisa de usuarios -->
     <div class="w3-col m7">
 
       <div class="w3-row-padding">
         <div class="w3-col m12">
           <div class="w3-card w3-round w3-white">
-
-          <form class="" action="index.html" method="post">
+          <form method="post">
             <div class="w3-container w3-padding" align="center">
-              <input type="email" name="email" class="w3-border w3-padding" style="width:50%;" placeholder="Pesquisar Usuario">
-              <button type="button" class="w3-border w3-theme-d2" style="height:40px; background-color:#0b501b "><i class="fa fa-search"></i></button>
+              <input type="text" name="filtro" class="w3-border w3-padding" style="width:50%;" placeholder="Pesquisar Usuario">
+              <button type="submit" class="w3-border w3-theme-d2" style="height:40px; background-color:#0b501b "><i class="fa fa-search"></i></button>
             </div>
           </form>
           </div>
         </div>
       </div>
 
-      <div class="w3-container w3-card w3-white w3-round w3-margin"><br>
-       
-      </div>
 
+<?php
+
+  $sql = "SELECT *
+          FROM usuario
+          $filtro_sql";
+
+  $retorno = $con->query( $sql );
+
+  while ( $registro = $retorno->fetch_array() ){
+    $id = $registro["id_user"];
+    $nome = $registro["nome"];
+    $sobrenome = $registro["sobrenome"];
+    $foto = $registro["foto"];
+
+    echo "<div class='w3-container w3-card w3-white w3-round w3-margin'><br>
+      <img src=$foto alt='Avatar' class='w3-left w3-margin-right' style='width:60px;height:80px;'>
+      <h4>$nome $sobrenome</h4><br>
+      <span class='w3-right w3-margin-left'><a href='outro_perfil.php?id=$id'><button type='submit'class='w3-button'>Ver Perfil</button></a></span>
+      <hr class='w3-clear'>
+    </div>";
+
+  			
+        //ver se existe relação entre os bruxos
+        $sql_amizade = "SELECT *
+          FROM amigos
+          WHERE ((id_de = '$id_user') and (id_para = '$id_amigo')) or ((id_de = '$id_amigo') and (id_para = '$id_user'))";
+
+        $retornoAmizade = $conexao->query($sql_amizade);
+
+        if($retornoAmizade == false){
+          echo $conexao->error;
+        }
+
+        $registroAmizade = $retornoAmizade->fetch_array();
+        $status = $registroAmizade["status"];
+
+
+        //Se é amigo
+        if($status == "1"){
+          echo "<td><a href='remover_amigo.php?desfazer=true&id_user=$id_user&id=$id_amigo&pagina=$pagina'>Remover amigo</a></td>";
+
+        //Se usuário não aceitou solicitação
+        } else if($status == "0"){
+          //echo "<td>amizade pedente</td>";
+
+          include_once "conecta_bd.php";	
+
+          $sql_pendente = "SELECT *
+            FROM amigos
+            WHERE ((id_de = '$id_user') and (id_para = '$id_amigo'))";
+
+          $retorno_pendente = $conexao->query($sql_pendente);
+
+          if($retorno_pendente == false){
+            echo $conexao->error;
+          }
+
+          if($registro_pendente = $retorno_pendente->fetch_array()){
+            $solicitou = $id_user;
+          } else {
+            $solicitou = $id_amigo;
+          }
+
+          //Se usuário que solicitou amizade
+          if($solicitou == $id_user){
+            echo "<td><a href='cancelar_solicitacao.php?cancelar=true&id_user=$id_user&id=$id_amigo&pagina=$pagina'>cancelar solicitação</a></td>";
+          } else {								
+
+            echo "<td><a href='aceitar.php?aceitar=true&id_user=$id_user&id=$id_amigo&pagina=$pagina'>aceitar</a> | <a href='recusar.php?recusar=true&id_user=$id_user&id=$id_amigo&pagina=$pagina'>recusar</a></td>";
+          }	
+
+        //Se não for amigo mostra icone para ADD
+        } else {
+          echo"<td align='center'><a href='solicitacao.php?solicitar=true&id_user=$id_user&id=$id_amigo&pagina=$pagina' title='Enviar solicitação'><img src='https://static.vecteezy.com/system/resources/previews/000/379/115/non_2x/add-user-vector-icon.jpg' width='35px' height='35px'></a></td>";					
+        }
+
+      }
+?>
+    <!-- End Middle Column -->
     </div>
+
+
+    <br>
+
+
+    <!-- End Grid -->
+    </div>
+
+    <!-- End Page Container -->
+    </div>
+    <br>
+
+    <!-- Footer -->
+    <footer class="w3-container w3-theme-d3 w3-padding-16">
+    <h5>Footer</h5>
+    </footer>
+
+    <footer class="w3-container w3-theme-d5">
+    <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
+    </footer>
+
+    <script>
+    // Accordion
+    function myFunction(id) {
+    var x = document.getElementById(id);
+    if (x.className.indexOf("w3-show") == -1) {
+    x.className += " w3-show";
+    x.previousElementSibling.className += " w3-theme-d1";
+    } else {
+    x.className = x.className.replace("w3-show", "");
+    x.previousElementSibling.className =
+    x.previousElementSibling.className.replace(" w3-theme-d1", "");
+    }
+    }
+
+    // Used to toggle the menu on smaller screens when clicking on the menu button
+    function openNav() {
+    var x = document.getElementById("navDemo");
+    if (x.className.indexOf("w3-show") == -1) {
+    x.className += " w3-show";
+    } else {
+    x.className = x.className.replace(" w3-show", "");
+    }
+    }
+    </script>
+
+    </body>
+    </html> 		
